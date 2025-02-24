@@ -87,17 +87,17 @@ sub receive_body { Future->done }
 
 # writes response events back to the client.
 sub send_stream_response {
-    my ( $self, $stream, $event ) = @_;
-    if ( $event->{type} eq 'http.response.start' ) {
-        my $status = $event->{status} // 200;
+    my ( $self, $stream, %event ) = @_;
+    if ( $event{type} eq 'http.response.start' ) {
+        my $status = $event{status} // 200;
         $stream->write("HTTP/1.1 $status OK\r\n");
-        for my $header ( @{ $event->{headers} // [] } ) {
+        for my $header ( @{ $event{headers} // [] } ) {
             $stream->write("$header->[0]: $header->[1]\r\n");
         }
         $stream->write("\r\n");
     }
-    elsif ( $event->{type} eq 'http.response.body' ) {
-        $stream->write( $event->{body} );
+    elsif ( $event{type} eq 'http.response.body' ) {
+        $stream->write( $event{body} );
     }
     return Future->done;
 }
